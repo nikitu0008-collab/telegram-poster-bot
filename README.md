@@ -61,7 +61,6 @@ CHANNEL_ID=@имя_канала
 TELEGRAM_API_ID=123456
 TELEGRAM_API_HASH=ваш_api_hash
 
-    Важно: никогда не коммитьте .env – он добавлен в .gitignore.
 
 5. Настройте источники контента
 
