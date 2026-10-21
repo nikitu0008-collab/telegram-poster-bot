@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Состояние бота: история, очередь, сессия Telethon
+src/posted_history.json
+src/queue.json
+src/user_session.session
+*.session
+
+.idea/
+.vscode/
+.DS_Store

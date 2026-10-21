@@ -13,36 +13,28 @@ from telegram import Bot
 from telegram.error import TelegramError
 import schedule
 
-#SETTINGS
-TELEGRAM_BOT_TOKEN = #TELEGRAM BOT TOKEN
-CHANNEL_ID = #"@CHANEL_ID"
-
-TELEGRAM_API_ID = #TELEGRAM API IP 
-TELEGRAM_API_HASH = #"TELEGRAM API HASH"
-
-#Интервал сбора контента (минуты) — 6 дней
-POST_INTERVAL_MINUTES = 8640
-#Интервал публикации (минуты)
-PUBLISH_INTERVAL_MINUTES = 30
-#Максимальное количество постов за один сбор
-MAX_POSTS_PER_COLLECT = 20
-
-#FILES
-HISTORY_FILE = "posted_history.json"
-QUEUE_FILE = "queue.json"
-
-# ========== ИСТОЧНИКИ ==========
-SOURCE_CHANNELS = [
-    #"@CHANNELS"
-]
-
-RSS_FEEDS = [
-    #"https://..."
-]
+from config import (
+    CHANNEL_ID,
+    HISTORY_FILE,
+    MAX_POSTS_PER_COLLECT,
+    MEME_PROBABILITY,
+    POST_INTERVAL_MINUTES,
+    PUBLISH_INTERVAL_MINUTES,
+    QUEUE_FILE,
+    RSS_FEEDS,
+    SESSION_FILE,
+    SOURCE_CHANNELS,
+    TELEGRAM_API_HASH,
+    TELEGRAM_API_ID,
+    TELEGRAM_BOT_TOKEN,
+    validate,
+)
 
 # ========== ИНИЦИАЛИЗАЦИЯ ==========
+validate()
+
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
-client = TelegramClient("user_session", TELEGRAM_API_ID, TELEGRAM_API_HASH)
+client = TelegramClient(SESSION_FILE, TELEGRAM_API_ID, TELEGRAM_API_HASH)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 # Подавляем технические сообщения Telethon
@@ -169,7 +161,7 @@ async def collect_and_post():
     added = 0
 
     # 1. Мем
-    if added < MAX_POSTS_PER_COLLECT and random.random() < 0.4:
+    if added < MAX_POSTS_PER_COLLECT and random.random() < MEME_PROBABILITY:
         meme = fetch_meme_with_image()
         if meme:
             caption, url = meme
@@ -270,6 +262,9 @@ def run_scheduler(loop):
 async def main():
     await client.start()
     logging.info("🚀 Telethon клиент запущен")
+
+    if hasattr(bot, "initialize"):
+        await bot.initialize()
 
     # Если очередь пуста, наполняем
     if not queue:
